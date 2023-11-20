@@ -32,8 +32,10 @@ public:
 		this->indexList = -1;
 		this->List_Tokens = List_Tokens_in;
 		this->size_List = List_Tokens_in.size();
-		std::cout << "Size of list is " << size_List << "\n";
-		this->tree = Make();
+		//std::cout << "Size of list is " << size_List << "\n";
+		this->stack.push(nullptr);
+		this->Advance();
+		this->tree = Term();
 	};
 	void mpop(SyntaxTree*& rezpop)
 	{
@@ -175,18 +177,38 @@ public:
 
 	SyntaxTree* Term()
 	{
+		std::cout << "here\n";
 		if (this->cToken->Type() == Identifier || this->cToken->Type() == Integer)
 		{
-			return new SyntaxTree(this->cToken, TERM);
+			if (this->LookAhead() == PWD)
+			{
+				this->stack.push(new SyntaxTree(this->cToken, TERM));
+				this->Advance();
+				return this->Term();
+			}
+			else
+			{
+				return new SyntaxTree(this->cToken, TERM);
+			}
 		}
-		else
-			return nullptr;
+		
+		if (this->cToken->Type() == PWD)
+		{
+			SyntaxTree* st;
+			this->mpop(st);
+			Token* opToken = this->cToken;
+			this->Advance();
+			return new SyntaxTree(opToken, TERM, st, this->Term());
+		}
+			
+		return nullptr;
 	}
-	/*SyntaxTree* Factor()
+	SyntaxTree* Factor()
 	{
-		if (this->LookAhead() == MUL)
-
-	}*/
+		SyntaxTree* left = this->Term();
+		if()
+		return nullptr;
+	};
 	void Print()
 	{
 		this->tree->Print();
@@ -194,6 +216,6 @@ public:
 	SyntaxTree* getSyntaxTree()
 	{
 		return this->tree;
-	}
+	};
 };
 
