@@ -35,7 +35,8 @@ public:
 		//std::cout << "Size of list is " << size_List << "\n";
 		this->stack.push(nullptr);
 		this->Advance();
-		this->tree = Term();
+		//this->tree = Term();
+		this->tree = Make();
 	};
 	void mpop(SyntaxTree*& rezpop)
 	{
@@ -191,7 +192,7 @@ public:
 				return new SyntaxTree(this->cToken, TERM);
 			}
 		}
-		
+
 		if (this->cToken->Type() == PWD)
 		{
 			SyntaxTree* st;
@@ -200,13 +201,45 @@ public:
 			this->Advance();
 			return new SyntaxTree(opToken, TERM, st, this->Term());
 		}
-			
+
 		return nullptr;
-	}
+	};
 	SyntaxTree* Factor()
 	{
 		SyntaxTree* left = this->Term();
-		if(this->LookAhead()==)
+		if(this->LookAhead()==MUL || this->LookAhead()==DIV || this->LookAhead()==RESD)
+		{
+			this->stack.push(new SyntaxTree(this->cToken, FACT));
+			this->Advance();
+			return this->Term();
+		}
+		if (this->cToken->Type() == MUL || this->cToken->Type() == DIV || this->cToken->Type() == RESD )
+		{
+			SyntaxTree* st;
+			this->mpop(st);
+			Token* opToken = this->cToken;
+			this->Advance();
+			return new SyntaxTree(opToken, FACT, st, this->Factor());
+		}
+		return nullptr;
+	};
+	SyntaxTree* Expression()
+	{
+		SyntaxTree* left = this->Term();
+		if (this->LookAhead() == MUL || this->LookAhead() == DIV || this->LookAhead() == RESD)
+		{
+			this->stack.push(new SyntaxTree(this->cToken, FACT));
+			this->Advance();
+			return this->Term();
+		}
+		if (this->cToken->Type() == PLUS || this->cToken->Type()==MINUS )
+		{
+			SyntaxTree* st;
+			this->mpop(st);
+			Token* opToken = this->cToken;
+			this->Advance();
+			return new SyntaxTree(opToken, EXP, st, this->Expression());
+		}
 		return nullptr;
 	};
 	void Print()

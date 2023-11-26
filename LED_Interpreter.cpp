@@ -5,7 +5,7 @@ Parser* Parser::instance = NULL;
 Interpreter* Interpreter::instance = NULL;
 int main()
 {
-    Lexer::getLexer()->MakeTokens("2^2^3");
+    Lexer::getLexer()->MakeTokens("1+2+3-5*6");
     Lexer::getLexer()->PrintTokens();
     std::vector<Token*>list;
     list = Lexer::getLexer()->SendTokens();
