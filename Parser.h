@@ -206,7 +206,7 @@ public:
 	SyntaxTree* Factor()
 	{
 		SyntaxTree* left = this->Term();
-		if()
+		if(this->LookAhead()==)
 		return nullptr;
 	};
 	void Print()
